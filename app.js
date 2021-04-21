@@ -1,14 +1,21 @@
 const express = require('express');
+const morgan = require('morgan');
 const createError = require('http-errors');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
+const expressSession = require('express-session');
+
 
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
+
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+  }
 
 // Limit requests from same API
 const limiter = rateLimit({
@@ -41,11 +48,11 @@ app.use((req, res, next) => {
 
 const userModel = mongoose.model('user');
 
-passport.use('local', new localStrategy(function (username, password, done) {
-    userModel.findOne({ username: username }, function (err, user) {
+passport.use('local', new localStrategy(function (email, password, done) {
+    userModel.findOne({ email }, function (err, user) {
         if (err) return done('Error while find user', null);
         if (!user) return done('User don`t exist!', null);
-        user.comparePasswords(password, function (error, isMatch) {
+        user.correctPassword(password, function (error, isMatch) {
             if (error) return done(error, false);
             if (!isMatch) return done('Invalid password!', false);
             return done(null, user);
