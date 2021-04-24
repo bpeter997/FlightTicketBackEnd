@@ -8,6 +8,10 @@ const localStrategy = require('passport-local').Strategy;
 const expressSession = require('express-session');
 
 const userRouter = require('./routes/userRoutes');
+const airportRouter = require('./routes/airportRoutes');
+const airlineRouter = require('./routes/airlineRoutes');
+
+
 const authController = require('./controllers/authController');
 
 const app = express();
@@ -29,22 +33,7 @@ app.use(express.json({ limit: '10kb' }));
 
 app.use(cookieParser());
 
-const whiteList = ['http://localhost:4200'];
-
-app.use((req, res, next) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Credentials', 'true');
-  if (req.method === 'OPTIONS') {
-    // Send response to OPTIONS requests
-    res.set(
-      'Access-Control-Allow-Methods',
-      'GET,PUT,POST,DELETE,PATCH,OPTIONS'
-    );
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-    res.set('Access-Control-Max-Age', '3600');
-  }
-  next();
-});
+app.use(authController.handleCors);
 
 passport.use(
   'local',
@@ -78,6 +67,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/airports', airportRouter);
+app.use('/api/v1/airlines', airlineRouter);
 
 app.use(function (req, res, next) {
   next(createError(404));
