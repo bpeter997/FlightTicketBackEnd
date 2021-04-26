@@ -6,8 +6,12 @@ const airplaneSchema = new mongoose.Schema({
     unique: true,
     required: [true, 'An airplane must have a licensePlate'],
   },
+  type: {
+    type: String,
+    required: [true, 'An airplane must have a type'],
+  },
   capacity: {
-    type: number,
+    type: Number,
     required: [true, 'A flight must have a capacity'],
   },
   location: {
@@ -17,5 +21,5 @@ const airplaneSchema = new mongoose.Schema({
   },
 });
 
-const Airplane = mongoose.model('Airplane', flightSchema);
+const Airplane = mongoose.model('Airplane', airplaneSchema);
 module.exports = Airplane;

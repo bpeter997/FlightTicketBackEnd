@@ -10,7 +10,9 @@ const expressSession = require('express-session');
 const userRouter = require('./routes/userRoutes');
 const airportRouter = require('./routes/airportRoutes');
 const airlineRouter = require('./routes/airlineRoutes');
-
+const airplaneRouter = require('./routes/airplaneRoutes');
+const flightRouter = require('./routes/flightRoutes');
+const ticketRouter = require('./routes/flightRoutes');
 
 const authController = require('./controllers/authController');
 
@@ -69,6 +71,9 @@ app.use(passport.session());
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/airports', airportRouter);
 app.use('/api/v1/airlines', airlineRouter);
+app.use('/api/v1/airplanes', airplaneRouter);
+app.use('/api/v1/flights', flightRouter);
+app.use('/api/v1/tickets', ticketRouter);
 
 app.use(function (req, res, next) {
   next(createError(404));
