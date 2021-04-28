@@ -44,28 +44,35 @@ const flightSchema = new mongoose.Schema({
       message: 'Source cannot be equal to destination'
     }
   },
+  transfers: {
+    type: [mongoose.Schema.ObjectId],
+    ref: 'Flight',
+    validate: {
+      validator: function(val) {
+        for (let i = 0; i < val.length; i++) {
+          const element = val[i];
+          if (i==0) {
+            if (element.from != this.from || element.startDate != this.startDate) return false;
+          } else if (i==val.length-1) {
+            if (element.to != this.to || element.arrivalDate != this.arrivalDate) return false;
+          } else {
+            if (val[i-1].to != val[i].from || val[i-1].arrivalDate < val[i].startDate) return false;
+          }
+        }
+        return true;
+      },
+      message: 'Source cannot be equal to destination'
+    }
+  },
   airline: {
-    type: mongoose.Schema.ObjectId,
+    type: [mongoose.Schema.ObjectId],
     ref: 'Airline',
     required: [true, 'A flight must have a reference airline'],
   },
   airplane: {
-    type: mongoose.Schema.ObjectId,
+    type: [mongoose.Schema.ObjectId],
     ref: 'Airplane',
     required: [true, 'A flight must have an airplane'],
-    // validate: {
-    //   validator: async function(val) {
-    //     let airplane = null;
-    //     try {
-    //       airplane = await Airplane.findById(val);
-    //       return ((airplane != null) && (airplane.location + '' == this.from + ''));
-    //     } catch (error) {
-    //       console.log(error);
-    //       return false;
-    //     }
-    //   },
-    //   message: 'Airplane location not equals source airport'
-    // }
   },
 });
 

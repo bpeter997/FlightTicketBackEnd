@@ -19,6 +19,11 @@ const airplaneSchema = new mongoose.Schema({
     ref: 'Airport',
     required: [true, 'A flight must have a location'],
   },
+  airline: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Airline',
+    required: [true, 'A flight must have an airline'],
+  },
 });
 
 const Airplane = mongoose.model('Airplane', airplaneSchema);
