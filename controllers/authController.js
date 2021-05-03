@@ -19,7 +19,7 @@ exports.login = async (req, res, next) => {
 
 exports.signUp = async (req, res, next) => {
   try {
-    const newUser = await User.create();
+    const newUser = await User.create(req.body);
     res.status(201).send("Successfull registration!");
   } catch (error) {
     console.log(error);
@@ -28,6 +28,7 @@ exports.signUp = async (req, res, next) => {
 };
 
 exports.protect = async (req, res, next) => {
+  console.log(req.isAuthenticated());
   if (!req.isAuthenticated()) {
     return res.status(403).send("You must be logged in!");
   }
@@ -52,9 +53,8 @@ exports.handleLocalStrategy = async function (username, password, done) {
 };
 
 exports.handleCors = (req, res, next) => {
-  // const whiteList = ['http://localhost:4200'];
-  res.set("Access-Control-Allow-Origin", "*");
-  res.set("Access-Control-Allow-Credentials", "true");
+  res.set("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.set("Access-Control-Allow-Credentials", true);
   if (req.method === "OPTIONS") {
     // Send response to OPTIONS requests
     res.set(
