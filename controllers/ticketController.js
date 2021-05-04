@@ -11,17 +11,17 @@ exports.getAllTicket = async (req, res) => {
       .paginate();
     const tickets = await features.query;
 
-    const freeTickets = [];
+    // const freeTickets = [];
 
-    for (const ticket of tickets) {
-      if (!ticket.email || ticket.email == '') freeTickets.push(ticket);
-    }
+    // for (const ticket of tickets) {
+    //   if (!ticket.email || ticket.email == '') freeTickets.push(ticket);
+    // }
 
     res.status(200).json({
       status: "success",
-      results: freeTickets.length,
+      results: tickets.length,
       data: {
-        tickets: freeTickets,
+        tickets: tickets,
       },
     });
   } catch (err) {
