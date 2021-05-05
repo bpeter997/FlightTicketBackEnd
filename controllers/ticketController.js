@@ -70,10 +70,21 @@ exports.createTicket = async (req, res) => {
 
 exports.updateTicket = async (req, res) => {
   try {
-    const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const tempTicket = await Ticket.findById(req.params.id);
+
+    let ticket = null;
+
+    if(tempTicket && !tempTicket.email && req.body.email) {
+
+      await Ticket.findByIdAndDelete(req.params.id);
+      ticket = await Ticket.create({price: tempTicket.price, flight: tempTicket.flight, email: req.body.email}); 
+
+    } else {
+      ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+    }
 
     res.status(200).json({
       status: "success",
@@ -82,6 +93,7 @@ exports.updateTicket = async (req, res) => {
       },
     });
   } catch (err) {
+    console.log(err);
     res.status(404).json({
       status: "fail",
       message: err,

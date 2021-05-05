@@ -12,8 +12,7 @@ const ticketSchema = new mongoose.Schema({
     required: [true, 'Ticket must belong to a flight!'],
   },
   email: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
+    type: String,
     validate: [validator.isEmail, 'Please provide a valid email'],
   },
 });

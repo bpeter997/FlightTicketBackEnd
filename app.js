@@ -49,7 +49,7 @@ app.use(
       }
     },
     credentials: true,
-    methods: "GET,PUT,POST,DELETE,OPTIONS",
+    methods: "GET,PUT,PATCH,POST,DELETE,OPTIONS",
   })
 );
 

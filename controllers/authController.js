@@ -1,6 +1,7 @@
 const passport = require("passport");
 const mongoose = require("mongoose");
 const User = require("./../models/userModel");
+const { rawListeners } = require("./../models/userModel");
 const userModel = mongoose.model("User");
 
 exports.login = async (req, res, next) => {
@@ -59,7 +60,7 @@ exports.handleCors = (req, res, next) => {
     // Send response to OPTIONS requests
     res.set(
       "Access-Control-Allow-Methods",
-      "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+      "GET,PUT,PATCH,POST,DELETE,OPTIONS"
     );
     res.set("Access-Control-Allow-Headers", "Content-Type");
     res.set("Access-Control-Max-Age", "3600");
