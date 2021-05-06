@@ -15,14 +15,7 @@ exports.getAllFlight = async (req, res) => {
     const flights = await features.query;
 
     for (const flight of flights) {
-      const source = await Airport.findById(flight.from);
-      const destination = await Airport.findById(flight.to);
-      const airline = await Airline.findById(flight.airline);
-      const airplane = await Airplane.findById(flight.airplane)
-      if (source) flight.from = source;
-      if (destination) flight.to = destination;
-      if (airline) flight.airline = airline;
-      if (airplane) flight.airplane = airplane;
+      await setFlightDependencies(flight);
     }
 
     res.status(200).json({
@@ -43,6 +36,7 @@ exports.getAllFlight = async (req, res) => {
 exports.getFlight = async (req, res) => {
   try {
     const flight = await Flight.findById(req.params.id);
+    await setFlightDependencies(flight);
 
     res.status(200).json({
       status: "success",
@@ -112,3 +106,18 @@ exports.deleteFlight = async (req, res) => {
     });
   }
 };
+async function setFlightDependencies(flight) {
+  const source = await Airport.findById(flight.from);
+  const destination = await Airport.findById(flight.to);
+  const airline = await Airline.findById(flight.airline);
+  const airplane = await Airplane.findById(flight.airplane);
+  if (source)
+    flight.from = source;
+  if (destination)
+    flight.to = destination;
+  if (airline)
+    flight.airline = airline;
+  if (airplane)
+    flight.airplane = airplane;
+}
+

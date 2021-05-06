@@ -1,7 +1,6 @@
 const passport = require("passport");
 const mongoose = require("mongoose");
 const User = require("./../models/userModel");
-const { rawListeners } = require("./../models/userModel");
 const userModel = mongoose.model("User");
 
 exports.login = async (req, res, next) => {
@@ -10,7 +9,7 @@ exports.login = async (req, res, next) => {
       if (error) return res.status(401).send(error);
       req.login(user, function (error) {
         if (error) return res.status(500).send(error);
-        return res.status(200).send("Login successful!");
+        return res.status(200).send({role: user.role});
       });
     })(req, res);
   } else {
