@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Ticket = require("./../models/ticketModel");
-const APIFeatures = require('./../utils/ApiFeatures');
+const Flight = require("./../models/flightModel");
+const APIFeatures = require("./../utils/ApiFeatures");
 
 exports.getAllTicket = async (req, res) => {
   try {
@@ -10,12 +11,6 @@ exports.getAllTicket = async (req, res) => {
       .limitFields()
       .paginate();
     const tickets = await features.query;
-
-    // const freeTickets = [];
-
-    // for (const ticket of tickets) {
-    //   if (!ticket.email || ticket.email == '') freeTickets.push(ticket);
-    // }
 
     res.status(200).json({
       status: "success",
@@ -28,6 +23,55 @@ exports.getAllTicket = async (req, res) => {
     res.status(404).json({
       status: "fail",
       message: err,
+    });
+  }
+};
+
+exports.getMyTicketStats = async (req, res) => {
+  try {
+    const ticket = await Ticket.aggregate([
+      {
+        $lookup: {
+          from: Flight.collection.name,
+          localField: "flight",
+          foreignField: "_id",
+          as: "flight",
+        },
+      },
+      {
+        $unwind: "$flight",
+      },
+      {
+        $match: {
+          email: req.params.email,
+          "flight.startDate": {
+            $gte: new Date(new Date().getFullYear().toString()),
+            $lt: new Date(new Date().getFullYear() + 1).toString(),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+          allPrice: { $sum: "$price" },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        ticket,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
+      status: "fail",
+      message: error,
     });
   }
 };
@@ -74,11 +118,13 @@ exports.updateTicket = async (req, res) => {
 
     let ticket = null;
 
-    if(tempTicket && !tempTicket.email && req.body.email) {
-
+    if (tempTicket && !tempTicket.email && req.body.email) {
       await Ticket.findByIdAndDelete(req.params.id);
-      ticket = await Ticket.create({price: tempTicket.price, flight: tempTicket.flight, email: req.body.email}); 
-
+      ticket = await Ticket.create({
+        price: tempTicket.price,
+        flight: tempTicket.flight,
+        email: req.body.email,
+      });
     } else {
       ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, {
         new: true,

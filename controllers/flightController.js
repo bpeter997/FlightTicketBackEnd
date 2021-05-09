@@ -3,7 +3,7 @@ const Flight = require("./../models/flightModel");
 const Airport = require("./../models/airportModel");
 const Airline = require("./../models/airlineModel");
 const Airplane = require("./../models/airplaneModel");
-const APIFeatures = require('./../utils/ApiFeatures');
+const APIFeatures = require("./../utils/ApiFeatures");
 
 exports.getAllFlight = async (req, res) => {
   try {
@@ -33,24 +33,67 @@ exports.getAllFlight = async (req, res) => {
   }
 };
 
-exports.getFlight = async (req, res) => {
+exports.mostPopularFlight = async (req, res) => {
+  console.log("beesik a fgvbe");
   try {
-    const flight = await Flight.findById(req.params.id);
-    await setFlightDependencies(flight);
-
+    const flight = await Flight.aggregate([
+      {
+        $group: {
+          _id: {
+            from: "$from",
+            to: "$to",
+          },
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+      {
+        $limit: 1,
+      },
+    ]);
+    if (flight) {
+      const from = await Airport.findById(flight[0]._id.from);
+      const to = await Airport.findById(flight[0]._id.to);
+      flight[0]._id.from = from.location;
+      flight[0]._id.to = to.location;
+    }
     res.status(200).json({
       status: "success",
       data: {
         flight,
       },
     });
-  } catch (err) {
+  } catch (error) {
+    console.log(error);
     res.status(404).json({
       status: "fail",
-      message: err,
+      message: error,
     });
   }
-};
+}
+
+exports.getFlight = async (req, res) => {
+    try {
+      const flight = await Flight.findById(req.params.id);
+      await setFlightDependencies(flight);
+
+      res.status(200).json({
+        status: "success",
+        data: {
+          flight,
+        },
+      });
+    } catch (err) {
+      res.status(404).json({
+        status: "fail",
+        message: err,
+      });
+    }
+  };
 
 exports.createFlight = async (req, res) => {
   try {
@@ -106,18 +149,14 @@ exports.deleteFlight = async (req, res) => {
     });
   }
 };
+
 async function setFlightDependencies(flight) {
   const source = await Airport.findById(flight.from);
   const destination = await Airport.findById(flight.to);
   const airline = await Airline.findById(flight.airline);
   const airplane = await Airplane.findById(flight.airplane);
-  if (source)
-    flight.from = source;
-  if (destination)
-    flight.to = destination;
-  if (airline)
-    flight.airline = airline;
-  if (airplane)
-    flight.airplane = airplane;
+  if (source) flight.from = source;
+  if (destination) flight.to = destination;
+  if (airline) flight.airline = airline;
+  if (airplane) flight.airplane = airplane;
 }
-
