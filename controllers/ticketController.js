@@ -29,6 +29,7 @@ exports.getAllTicket = async (req, res) => {
 
 exports.getMyTicketStats = async (req, res) => {
   try {
+    console.log(new Date(new Date(Date.now()).getFullYear()).toISOString());
     const ticket = await Ticket.aggregate([
       {
         $lookup: {
@@ -46,7 +47,7 @@ exports.getMyTicketStats = async (req, res) => {
           email: req.params.email,
           "flight.startDate": {
             $gte: new Date(new Date().getFullYear().toString()),
-            $lt: new Date(new Date().getFullYear() + 1).toString(),
+            $lt: new Date((new Date().getFullYear()+1).toString()),
           },
         },
       },
