@@ -114,11 +114,13 @@ exports.createFlight = async (req, res) => {
 };
 
 exports.updateFlight = async (req, res) => {
+  console.log(req.body);
   try {
     const flight = await Flight.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true,
+      runValidators: false,
     });
+    console.log(flight);
 
     res.status(200).json({
       status: "success",
@@ -127,6 +129,7 @@ exports.updateFlight = async (req, res) => {
       },
     });
   } catch (err) {
+    console.log(err);
     res.status(404).json({
       status: "fail",
       message: err,
