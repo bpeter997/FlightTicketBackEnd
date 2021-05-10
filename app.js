@@ -36,7 +36,7 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(cookieParser());
 
-const whiteList = ["http://localhost:4200", "https://flight-ticket-frontend.herokuapp.com:8000" ,undefined];
+const whiteList = ["http://localhost:4200", "https://flight-ticket-frontend.herokuapp.com:4200" ,undefined];
 
 //app.use(authController.handleCors);
 app.use(
