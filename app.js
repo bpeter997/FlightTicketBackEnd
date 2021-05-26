@@ -36,7 +36,7 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(cookieParser());
 
-const whiteList = ['http://localhost:4200', 'https://flight-ticket-frontend.herokuapp.com' ,undefined];
+const whiteList = ['http://localhost:4200', 'https://flight-ticket-frontend.herokuapp.com', 'https://flight-ticket-backend.herokuapp.com' ,undefined];
 
 //app.use(authController.handleCors);
 app.use(
@@ -87,7 +87,7 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')))
 .set('views', path.join(__dirname, 'views'))
 .set('view engine', 'ejs')
-.get('/', (req, res) => res.render('index'));
+.get('/', (req, res) => res.render('pages/index'));
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/airports", airportRouter);
