@@ -34,7 +34,6 @@ exports.getAllFlight = async (req, res) => {
 };
 
 exports.mostPopularFlight = async (req, res) => {
-  console.log("beesik a fgvbe");
   try {
     const flight = await Flight.aggregate([
       {
