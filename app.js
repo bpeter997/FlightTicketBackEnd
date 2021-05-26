@@ -87,7 +87,7 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')))
 .set('views', path.join(__dirname, 'views'))
 .set('view engine', 'ejs')
-.get('/', (req, res) => res.render('pages/index'));
+.get('/', (req, res) => res.render('index'));
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/airports", airportRouter);
